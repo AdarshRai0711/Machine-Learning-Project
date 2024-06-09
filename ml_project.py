@@ -7,10 +7,14 @@ Original file is located at
     https://colab.research.google.com/gist/AdarshRai0711/f581f65915cb4900413478be65006f6f/ml-project.ipynb
 """
 
+# Reading Data
+
 import pandas as pd
 
 df= pd.read_csv('/content/weatherdata.csv')
 df.head()
+
+# Data cleaning and preprocessing
 
 df.dtypes
 
@@ -29,6 +33,16 @@ df.drop(['Unnamed: 0', 'Date'], inplace = True, axis = 1)
 print(df.isnull().sum())
 
 df.shape
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+for col in df.select_dtypes([float, int]).columns:
+  sns.boxplot(df[col])
+  plt.title(col)
+  plt.show()
+
+# Data Encoding
 
 from sklearn.preprocessing import LabelEncoder
 
@@ -50,47 +64,35 @@ df['RainTomorrow'] = encoder_b.fit_transform(df['RainTomorrow'])
 encoder_b = LabelEncoder()
 df['WindGustDir'] = encoder_b.fit_transform(df['WindGustDir'])
 
-import seaborn as sns
-import matplotlib.pyplot as plt
 
-for col in df.select_dtypes([float, int]).columns:
-  sns.boxplot(df[col])
-  plt.title(col)
-  plt.show()
+# Split the data in x and y
 
 x = df.drop('RainTomorrow', axis=1)
 y = df['RainTomorrow']
 
+# Split the data into traning and testing model
+
 from sklearn.model_selection import train_test_split
 
 xtrain, xtest, ytrain, ytest = train_test_split(x, y, train_size =0.8 )
+
+# Building a model
 
 from sklearn.tree import DecisionTreeClassifier
 
 model = DecisionTreeClassifier(max_depth = 8,max_leaf_nodes = 10 )
 model
 
+# Training Model
+
 model.fit(xtrain, ytrain)
+
+# Get predection on training and testing data
 
 trainpred = model.predict(xtrain)
 testpred = model.predict(xtest)
 
-from sklearn.metrics import classification_report
-
-print(classification_report(ytrain, trainpred))
-
-print(classification_report(ytest, testpred))
-
-"""# Second Model (Logistic Regressor)"""
-
-from sklearn.linear_model import LogisticRegression
-
-model = LogisticRegression()
-
-model.fit(xtrain, ytrain)
-
-trainpred = model.predict(xtrain)
-testpred = model.predict(xtest)
+# Evaluating the Model
 
 from sklearn.metrics import classification_report
 
